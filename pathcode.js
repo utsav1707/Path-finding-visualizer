@@ -20,7 +20,7 @@ let destinationSelected
 // destColor = color(140, 68, 20)
 
 function resetCanvas() {
-    console.log(new Node(0, 0))
+    // console.log(new Node(0, 0))
     // Initializing variables
     started = false
     algo = null
@@ -40,8 +40,6 @@ function resetCanvas() {
     startButton.disabled = false
     startButton.innerHTML = "Visualize"
     startButton.onclick = start;
-    let message = document.getElementById('message')
-    message.innerHTML = ""
 
     // creating the graph 
     for (let i = 0; i < cols; i++) {
@@ -81,7 +79,7 @@ function resetCanvas() {
             })
         })
     }
-    //making sure source and destination aren't obstacls;
+    // making sure source and destination aren't obstacles;
     source.obstacle = false;
     destination.obstacle = false;
 
@@ -89,13 +87,14 @@ function resetCanvas() {
     // revealing the canvas on screen
     for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-            graph[i][j].show(255);
+            graph[i][j].show(250);      // show() method helps us to display elements hidden through display:none or jQuery hide () method
         }
     }
-    source.show(color(87, 50, 168));
+    
+   source.show(color(87, 50, 168));
     destination.show(color(140, 68, 20));
     noLoop();
-    console.log(openSet)
+    // console.log(openSet)
 }
 
 function Node(i, j) {
@@ -103,7 +102,7 @@ function Node(i, j) {
     this.j = j;
     this.x = this.i * resolution;
     this.y = this.j * resolution;
-    this.r = resolution - 1;
+    this.r = resolution -1;
 
     // needed for Dijkstra
     this.d = Infinity
@@ -114,7 +113,7 @@ function Node(i, j) {
     this.dragging = false
 
     this.show = (color) => {
-        console.log(color)
+        // console.log(color)
         let x = this.x;
         let y = this.y;
         let r = this.r;
@@ -129,6 +128,7 @@ function Node(i, j) {
         strokeWeight(1);
         rect(x, y, r, r);
     }
+    
     this.addNeighbor = () => {
 
         let i = this.i;
@@ -138,11 +138,6 @@ function Node(i, j) {
         if (i < cols - 1) this.neighbors.push(graph[i + 1][j]);
         if (j > 0) this.neighbors.push(graph[i][j - 1]);
         if (j < rows - 1) this.neighbors.push(graph[i][j + 1]);
-        //Diagonal Neighbors
-        // if (i > 0 && j > 0) this.neighbors.push(graph[i - 1][j - 1]);
-        // if (i < cols - 1 && j < rows - 1) this.neighbors.push(graph[i + 1][j + 1]);
-        // if (i > 0 && j < rows - 1) this.neighbors.push(graph[i - 1][j + 1]);
-        // if (i < cols - 1 && j > 0) this.neighbors.push(graph[i + 1][j - 1]);
     }
 
     this.clicked = () => {
@@ -187,7 +182,6 @@ function setup() {
     screen = createCanvas(windowWidth - (windowHeight * 0.05), windowHeight - (windowHeight * 0.20));
     screen.parent("sketch01");
     centerCanvas();
-    // startButton.parent("sketch01");
     resetCanvas()
 }
 
@@ -201,18 +195,12 @@ function dijkstraInitialize(){
         })
     })
 }
-
-function BFSorDFS_initialize() {
-    openSet.push(source);
-    closedSet.push(source)
-
-}
 function draw() {
     if (started) {
         // Algorithm for Dijkstra
         if (algo == "Dijkstra") {
             if (openSet.length > 0) {
-                current = lowestDscoreNode(); //It'll return the node least d value
+                current = lowestDscoreNode(); //It'll return the node with least d value
                 
                 // Means there's no possible path with finite distance from source to destination
                 if(current.d === Infinity){
@@ -227,7 +215,7 @@ function draw() {
                 }
 
                 //removing the "current" vertex from openSet and adding it to closedSet
-                var removeIndex = openSet.map(function (item) { return item; }).indexOf(current);
+                let removeIndex=openSet.indexOf(current)
                 openSet.splice(removeIndex, 1);
                 closedSet.push(current)
                 for (neighbor of current.neighbors) {
@@ -247,65 +235,6 @@ function draw() {
 
         }
 
-        // Algorithm for Breadth First Search
-        if (algo == "Breadth First Search") {
-            if (openSet.length > 0) {
-                current = openSet[0]
-                if (current == destination) {
-                    noLoop();
-                    console.log("We're Done!")
-                }
-
-                //removing the "current" vertex from openSet and adding it to closedSet
-                var removeIndex = openSet.map(function (item) { return item; }).indexOf(current);
-                openSet.splice(removeIndex, 1);
-                console.log(openSet)
-                for (neighbor of current.neighbors) {
-                    if (!closedSet.includes(neighbor) && !neighbor.obstacle) {
-                        openSet.push(neighbor);
-                        closedSet.push(neighbor);
-                        neighbor.parent = current
-                    }
-                }
-
-            }
-            else {
-                console.log('no solution');
-                noLoop();
-                return;
-            }
-        }
-
-        // Algorithm for Depth First Search
-        if (algo == "Depth First Search") {
-            if (openSet.length > 0) {
-                console.log(openSet)
-                current = openSet[openSet.length - 1]
-                if (current == destination) {
-                    noLoop();
-                    console.log("We're Done!")
-                }
-
-                //removing the "current" vertex from openSet and adding it to closedSet
-                var removeIndex = openSet.map(function (item) { return item; }).indexOf(current);
-                openSet.splice(removeIndex, 1);
-                console.log(openSet)
-                for (neighbor of current.neighbors) {
-                    if (!closedSet.includes(neighbor) && !neighbor.obstacle) {
-                        openSet.push(neighbor);
-                        closedSet.push(neighbor);
-                        neighbor.parent = current
-                    }
-                }
-
-            }
-            else {
-                console.log('no solution');
-                noLoop();
-                return;
-            }
-        }
-
         background(255);
 
         // revealing the canvas on screen
@@ -322,9 +251,6 @@ function draw() {
                     node.show(color(45, 196, 129));    
                 }
             }
-            else{
-                node.show(color(45, 196, 129));
-            }
         }
         for (node of closedSet) {
             node.show(color(255, 0, 0, 50));
@@ -337,9 +263,6 @@ function draw() {
             shortestPath.push(temp.parent);
             temp = temp.parent;
         }
-        // for (Node of shortestPath) {
-        //     Node.show(color(246, 196, 76));
-        // }
         noFill();
         stroke(255, 0, 200);
         strokeWeight(4);
@@ -359,15 +282,6 @@ function dropdown(event) {
     let startButton = document.getElementById('startButton')
     startButton.innerHTML = `Start ${algo}`
     let message = document.getElementById('message')
-    if(algo === "Dijkstra"){
-        message.innerHTML = `Insight: Dijkstra's Algorithm Or A Variant Of It Is Known As UCS <span style = "font-weight: bold;">Gurantees</span> Shortest Path`
-    }
-    else if(algo === "Breadth First Search"){
-        message.innerHTML = `Insight: Breadth First Search (BFS) <span style = "font-weight: bold;">Gurantees</span> Shortest Path In An <span style = "font-weight: bold;">Unweighted Graph</span> And A Feasible Choice <span style = "font-weight: bold;">If The Destination Is Closer To The Source</span>`
-    }
-    else if(algo === "Depth First Search"){
-        message.innerHTML = `Insight: Depth First Search (DFS) <span style = "font-weight: bold;">Does Not Gurantee</span> Shortest Path Though Is A Feasible Choice For Memory <span style = "font-weight: bold;">If The Destination Is Far Away From The Source</span>`
-    }
 }
 
 function start() {
@@ -379,34 +293,10 @@ function start() {
    else if(algo === "Dijkstra"){
         dijkstraInitialize()
     }
-    else {
-        BFSorDFS_initialize()
-    }
 
     started = true;
     startButton.disabled = true
     loop();
-}
-
-function throwObstacles() {
-    // It maintains obstacle's distribution in the graph
-    let weights = [
-        ["Obstacle", 30],
-        ["Non Obstacle", 70]
-    ]
-    console.log(weights[1][1])
-    for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-            if (graph[i][j] != source && graph[i][j] != destination) {
-                // taking decision if we should make this node an obstacle or not
-                let decision = weightedRandom(weights)
-                if (decision === "Obstacle") {
-                    graph[i][j].obstacle = true
-                    graph[i][j].show()
-                }
-            }
-        }
-    }
 }
 
 function mouseDragged() {
@@ -466,13 +356,6 @@ function mousePressed() {
                     if (destination === graph[i][j]) {
                         destinationSelected = true
                     }
-                    // console.log("HERE")
-                    // srcORdstClicked = true
-                    // change prev source's color
-                    // source.show(255)
-                    // source = graph[i][j]
-                    // source.show(color(87, 50, 168))
-                    // graph[i][j].clicked();
                 }
             }
         }
@@ -485,7 +368,7 @@ function mouseReleased() {
             for (let j = 0; j < rows; j++) {
                 //let d = dist(mouseX, mouseY, graph[i][j].x, graph[i][j].y);
                 if (mouseX >= graph[i][j].x && mouseX <= graph[i][j].x + graph[i][j].r && mouseY >= graph[i][j].y && mouseY <= graph[i][j].y + graph[i][j].r) {
-                    if (sourceSelected) {
+                    if (sourceSeleected) {
                         if (graph[i][j] === destination) {
                             source = graph[i - 1][j]
                             source.obstacle = false
@@ -501,7 +384,7 @@ function mouseReleased() {
                         }
                     }
                     else {
-                        if (graph[i][j] === source) {
+                        if (graph[i][j] === sourc) {
 
                             destination = graph[i - 1][j]
                             destination.obstacle = false
@@ -522,28 +405,6 @@ function mouseReleased() {
     }
 }
 
-function heuristic(node, goal) {
-    //Manhattan distance
-    dx = abs(node.x - goal.x);
-    dy = abs(node.y - goal.y);
-    return 1 * (dx + dy);
-
-
-    // let d = dist(a.i, a.j, b.i, b.j);
-    // let d = abs(a.i - b.i) + abs(a.j - b.j);
-    // return d;
-}
-
-function lowestFscoreNode() {
-    let minNode = openSet[0];
-    for (node of openSet) {
-        if (node.f < minNode.f) {
-            minNode = node;
-        }
-    }
-    return minNode;
-}
-
 function lowestDscoreNode() {
     let minNode = openSet[0];
     for (node of openSet) {
@@ -554,40 +415,6 @@ function lowestDscoreNode() {
     return minNode;
 }
 
-function lowestHeuristicNode() {
-    let minNode = openSet[0];
-    for (node of openSet) {
-        if (node.h < minNode.h) {
-            minNode = node;
-        }
-    }
-    return minNode;
-}
 
-function weightedRandom(data) {
-    // First, we loop the main dataset to count up the total weight. We're starting the counter at one because the upper boundary of Math.random() is exclusive.
-    let total = 1;
-    for (let i = 0; i < data.length; ++i) {
-        total += data[i][1];
-    }
 
-    // Total in hand, we can now pick a random value akin to our
-    // random index from before.
-    const threshold = Math.floor(Math.random() * total);
-
-    // Now we just need to loop through the main data one more time
-    // until we discover which value would live within this
-    // particular threshold. We need to keep a running count of
-    // weights as we go, so let's just reuse the "total" variable
-    // since it was already declared.
-    total = 0;
-    for (let i = 0; i < data.length; ++i) {
-        // Add the weight to our running total.
-        total += data[i][1];
-
-        // If this value falls within the threshold, we're done!
-        if (total >= threshold) {
-            return data[i][0];
-        }
-    }
-}
+// utsav tulsyan copyright
